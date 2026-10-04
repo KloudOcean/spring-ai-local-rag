@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Local RAG</title>
+    <style>
+        body { margin:0; background:#0f1117; color:#e8eaf0; font:18px/1.6 system-ui, sans-serif; }
+        main { max-width:820px; margin:0 auto; padding:40px 20px; }
+        h1 span { color:#8f88ff; }
+        .card { background:#181b24; border:1px solid #2a2f3d; border-radius:14px; padding:18px; margin-bottom:18px; }
+        .row { display:flex; gap:10px; }
+        input[type=text] { flex:1; background:#0f1117; color:#e8eaf0; border:1px solid #2a2f3d; border-radius:10px; padding:12px; font:inherit; }
+        button { background:#8f88ff; color:#0f1117; border:0; border-radius:10px; padding:12px 18px; font:inherit; font-weight:600; }
+        #status { color:#8b91a3; margin-top:10px; }
+        .q { color:#8f88ff; font-weight:600; margin-top:22px; }
+        .a { white-space:pre-wrap; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Chat with your <span>PDFs</span></h1>
+    <div class="card">
+        <div class="row"><input type="file" id="file" accept="application/pdf"><button id="upload">Upload</button></div>
+        <div id="status"></div>
+    </div>
+    <div class="card">
+        <form class="row" id="ask"><input type="text" id="question" placeholder="Ask about your documents..."><button>Ask</button></form>
+        <div id="chat"></div>
+    </div>
+</main>
+<script>
+    document.getElementById('upload').onclick = async () => {
+    const body = new FormData();
+    body.append('file', document.getElementById('file').files[0]);
+    const res = await (await fetch('/api/documents', { method: 'POST', body })).json();
+    document.getElementById('status').textContent = `✓ ${res.file}: ${res.pages} pages, ${res.chunks} chunks`;
+  };
+
+  document.getElementById('ask').onsubmit = e => {
+    e.preventDefault();
+    const question = document.getElementById('question').value;
+    const chat = document.getElementById('chat');
+    chat.insertAdjacentHTML('beforeend', '<div class="q"></div><div class="a"></div>');
+    chat.lastElementChild.previousElementSibling.textContent = question;
+    const answer = chat.lastElementChild;
+    const stream = new EventSource('/api/ask?question=' + encodeURIComponent(question));
+    stream.onmessage = m => answer.textContent += JSON.parse(m.data).text;
+    stream.onerror = () => stream.close();
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: local-rag
+  ai:
+    ollama:
+      chat:
+        options:
+          model: gemma4:latest
+          temperature: 0.2
+          think-option: false
+      embedding:
+        options:
+          model: nomic-embed-text
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        dimensions: 768
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
