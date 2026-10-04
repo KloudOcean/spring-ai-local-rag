@@ -2,6 +2,8 @@
 
 Source code for the KloudOcean Academy video **"RAG Tutorial in Java: Build a PDF Chatbot with Spring AI (100% Local)"**.
 
+▶️ **Watch the tutorial:** https://youtu.be/6jVbRSl-hZU
+
 Upload a PDF, ask questions in plain English, and get answers that cite the exact file and page. Everything runs on your laptop: no API keys, no monthly bill.
 
 - Two Java classes, under 100 lines
